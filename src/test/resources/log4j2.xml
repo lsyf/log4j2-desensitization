@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN" packages="log4j2">
+    <properties>
+        <property name="pattern">[%d{yyyy-MM-dd HH:mm:ss.SSS}][%-5level][%thread] %logger - %msg%n
+        </property>
+    </properties>
+
+    <appenders>
+
+        <Console name="console" target="system_out">
+            <MyPatternLayout pattern="${pattern}">
+                <Desensitized>
+                    <enable>true</enable>
+                    <DesensitizedField name="__default__" content="en|num" c="*" skipSymbols=" " skipHead="6"
+                                       skipTail="4"/>
+                    <DesensitizedField name="phone" content="num" skipHead="6" skipTail="4"/>
+                </Desensitized>
+            </MyPatternLayout>
+        </Console>
+
+
+    </appenders>
+
+    <loggers>
+        <root level="info">
+            <appender-ref ref="console"/>
+
+        </root>
+
+    </loggers>
+
+
+</configuration>
