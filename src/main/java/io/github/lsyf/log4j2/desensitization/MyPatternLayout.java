@@ -6,6 +6,7 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.plugins.*;
+import org.apache.logging.log4j.core.impl.LocationAware;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 import org.apache.logging.log4j.core.layout.ByteBufferDestination;
 import org.apache.logging.log4j.core.layout.Encoder;
@@ -26,7 +27,7 @@ import java.util.Map;
 /**
  * A flexible layout configurable with pattern string.
  * <p>
- * The goal of this class is to {@link org.apache.logging.log4j.core.Layout#toByteArray format} a {@link LogEvent} and
+ * The goal of this class is to {@link Layout#toByteArray format} a {@link LogEvent} and
  * return the results. The format of the result depends on the <em>conversion pattern</em>.
  * </p>
  * <p>
@@ -56,7 +57,9 @@ public final class MyPatternLayout extends AbstractStringLayout {
      */
     public static final String SIMPLE_CONVERSION_PATTERN = "%d [%t] %p %c - %m%n";
 
-    /** Key to identify pattern converters. */
+    /**
+     * Key to identify pattern converters.
+     */
     public static final String KEY = "Converter";
 
     /**
@@ -124,6 +127,12 @@ public final class MyPatternLayout extends AbstractStringLayout {
     public static SerializerBuilder newSerializerBuilder() {
         return new SerializerBuilder();
     }
+
+    @Override
+    public boolean requiresLocation() {
+        return eventSerializer instanceof LocationAware && ((LocationAware) eventSerializer).requiresLocation();
+    }
+
 
     /**
      * Deprecated, use {@link #newSerializerBuilder()} instead.
@@ -282,7 +291,7 @@ public final class MyPatternLayout extends AbstractStringLayout {
                 .build();
     }
 
-    private static class PatternSerializer implements Serializer, Serializer2 {
+    private static class PatternSerializer implements Serializer, Serializer2, LocationAware {
 
         private final PatternFormatter[] formatters;
         private final RegexReplacement replace;
@@ -324,6 +333,16 @@ public final class MyPatternLayout extends AbstractStringLayout {
                 buffer.append(str);
             }
             return buffer;
+        }
+
+        @Override
+        public boolean requiresLocation() {
+            for (PatternFormatter formatter : formatters) {
+                if (formatter.requiresLocation()) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override
@@ -419,7 +438,7 @@ public final class MyPatternLayout extends AbstractStringLayout {
 
     }
 
-    private static class PatternSelectorSerializer implements Serializer, Serializer2 {
+    private static class PatternSelectorSerializer implements Serializer, Serializer2, LocationAware {
 
         private final PatternSelector patternSelector;
         private final RegexReplacement replace;
@@ -462,6 +481,11 @@ public final class MyPatternLayout extends AbstractStringLayout {
                 buffer.append(str);
             }
             return buffer;
+        }
+
+        @Override
+        public boolean requiresLocation() {
+            return patternSelector instanceof LocationAware && ((LocationAware) patternSelector).requiresLocation();
         }
 
         @Override
