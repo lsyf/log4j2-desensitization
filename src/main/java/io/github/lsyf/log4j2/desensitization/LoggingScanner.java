@@ -74,28 +74,32 @@ public class LoggingScanner {
                 int end = -1;
                 int index;
                 int missNum = 0;//未匹配字符数
-                int continuousSkipNum = 0;//连续跳过字符数
+                int continuousIgnoreNum = 0;//连续跳过字符数
                 int curTail = emit.getEnd();//匹配到的字符尾部
                 int nextHead = emits.get(i + 1).getStart();//下一个匹配字符的首部
                 for (index = curTail + 1; missNum <= maxMissed && index < nextHead; index++) {
                     char c = chars[index];
-                    boolean hitSkipSymbol = config.hitSkipSymbol(c);
-                    if (!hitSkipSymbol && config.hitContent(c)) {
+                    boolean hitIgnoreSymbol = config.hitIgnoreSymbol(c);
+                    //命中脱敏内容
+                    if (!hitIgnoreSymbol && config.hitContent(c)) {
                         isHit = true;
                         if (start == -1) {
                             start = index;
                         }
                     } else {
+                        //如果上个字符符合脱敏内容格式，下一个未命中，则视为结束
                         if (isHit) {
                             end = index;
                             break;
                         } else {
-                            if (hitSkipSymbol) {
-                                if (++continuousSkipNum == 1) {
+                            if (hitIgnoreSymbol) {
+                                //对于免去筛查的字符，连续多个时视为只有一个字符
+                                if (++continuousIgnoreNum == 1) {
                                     missNum++;
                                 }
                             } else {
-                                continuousSkipNum = 0;
+                                //既非免筛字符也非脱敏内容，则清空连续免筛数，增加未命中数
+                                continuousIgnoreNum = 0;
                                 missNum++;
                             }
                         }
@@ -123,23 +127,26 @@ public class LoggingScanner {
         private Integer skipHead;//跳过前n个字符
         private Integer skipTail;//跳过后n个字符
         private Character c;//替换字符
-        private String skipSymbols;//可跳过的字符
-        private HashSet<Character> skipSymbolArray = new HashSet<>();
+        private String ignoreSymbols;//可跳过的字符
+        private HashSet<Character> ignoreSymbolArray = new HashSet<>();
         private Integer maxMissed;//最大未命中数。超过数量则该字段脱敏失败
+
+        private Set<CharType> charTypes = new HashSet<>();//内容格式
+        private Set<Character> charArray = new HashSet<>();//字符内容
 
         public Config(String name,
                       String content,
                       Integer skipHead,
                       Integer skipTail,
                       Character c,
-                      String skipSymbols,
+                      String ignoreSymbols,
                       Integer maxMissed) {
             setName(name);
             setContent(content);
             setSkipHead(skipHead);
             setSkipTail(skipTail);
             setC(c);
-            setSkipSymbols(skipSymbols);
+            setIgnoreSymbols(ignoreSymbols);
             setMaxMissed(maxMissed);
 
         }
@@ -163,12 +170,12 @@ public class LoggingScanner {
 
         }
 
-        public void setSkipSymbols(String skipSymbols) {
-            this.skipSymbols = skipSymbols;
-            skipSymbolArray.clear();
-            if (skipSymbols != null) {
-                for (int i = 0; i < skipSymbols.length(); i++) {
-                    skipSymbolArray.add(skipSymbols.charAt(i));
+        public void setIgnoreSymbols(String ignoreSymbols) {
+            this.ignoreSymbols = ignoreSymbols;
+            ignoreSymbolArray.clear();
+            if (ignoreSymbols != null) {
+                for (int i = 0; i < ignoreSymbols.length(); i++) {
+                    ignoreSymbolArray.add(ignoreSymbols.charAt(i));
                 }
             }
         }
@@ -179,7 +186,7 @@ public class LoggingScanner {
             Optional.ofNullable(a.maxMissed).ifPresent(x -> this.setMaxMissed(x));
             Optional.ofNullable(a.skipHead).ifPresent(x -> this.setSkipHead(x));
             Optional.ofNullable(a.skipTail).ifPresent(x -> this.setSkipTail(x));
-            Optional.ofNullable(a.skipSymbols).ifPresent(x -> this.setSkipSymbols(x));
+            Optional.ofNullable(a.ignoreSymbols).ifPresent(x -> this.setIgnoreSymbols(x));
         }
 
         public void extend(Config p) {
@@ -188,18 +195,16 @@ public class LoggingScanner {
             this.setMaxMissed(Optional.ofNullable(maxMissed).orElse(p.maxMissed));
             this.setSkipHead(Optional.ofNullable(skipHead).orElse(p.skipHead));
             this.setSkipTail(Optional.ofNullable(skipTail).orElse(p.skipTail));
-            this.setSkipSymbols(Optional.ofNullable(skipSymbols).orElse(p.skipSymbols));
+            this.setIgnoreSymbols(Optional.ofNullable(ignoreSymbols).orElse(p.ignoreSymbols));
         }
 
-        public boolean hitSkipSymbol(char c) {
-            if (charArray.isEmpty()) {
+        public boolean hitIgnoreSymbol(char c) {
+            if (ignoreSymbolArray.isEmpty()) {
                 return false;
             }
-            return skipSymbolArray.contains(c);
+            return ignoreSymbolArray.contains(c);
         }
 
-        private Set<CharType> charTypes = new HashSet<>();//字段内容格式
-        private Set<Character> charArray = new HashSet<>();
 
         public boolean hitContent(char c) {
             for (CharType charType : charTypes) {

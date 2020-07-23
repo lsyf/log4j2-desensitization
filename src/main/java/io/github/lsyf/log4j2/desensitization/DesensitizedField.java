@@ -14,7 +14,7 @@ public final class DesensitizedField {
     private final Integer skipHead;//跳过前n个字符
     private final Integer skipTail;//跳过后n个字符
     private final Character c;//替换字符
-    private final String skipSymbols;//不计入未命中数量的字符
+    private final String ignoreSymbols;//不计入未命中数量的字符
     private final Integer maxMissed;//最大未命中数。超过数量则该字段脱敏失败
 
 
@@ -36,7 +36,7 @@ public final class DesensitizedField {
         @PluginBuilderAttribute
         private Character c;//替换字符
         @PluginBuilderAttribute
-        private String skipSymbols;//不计入未命中数量的字符
+        private String ignoreSymbols;//不计入未命中数量的字符
         @PluginBuilderAttribute
         private Integer maxMissed;//最大未命中数。超过数量则该字段脱敏失败
 
@@ -65,8 +65,8 @@ public final class DesensitizedField {
             return this;
         }
 
-        public Builder setSkipSymbols(final String skipSymbols) {
-            this.skipSymbols = skipSymbols;
+        public Builder setIgnoreSymbols(final String ignoreSymbols) {
+            this.ignoreSymbols = ignoreSymbols;
             return this;
         }
 
@@ -77,18 +77,18 @@ public final class DesensitizedField {
 
         @Override
         public DesensitizedField build() {
-            return new DesensitizedField(name, content, skipHead, skipTail, c, skipSymbols, maxMissed);
+            return new DesensitizedField(name, content, skipHead, skipTail, c, ignoreSymbols, maxMissed);
         }
 
     }
 
-    public DesensitizedField(final String name, final String content, final Integer skipHead, final Integer skipTail, final Character c, final String skipSymbols, final Integer maxMissed) {
+    public DesensitizedField(final String name, final String content, final Integer skipHead, final Integer skipTail, final Character c, final String ignoreSymbols, final Integer maxMissed) {
         this.name = name;
         this.content = content;
         this.skipHead = skipHead;
         this.skipTail = skipTail;
         this.c = c;
-        this.skipSymbols = skipSymbols;
+        this.ignoreSymbols = ignoreSymbols;
         this.maxMissed = maxMissed;
     }
 
@@ -112,18 +112,20 @@ public final class DesensitizedField {
         return this.c;
     }
 
-    public String getSkipSymbols() {
-        return this.skipSymbols;
+    public String getIgnoreSymbols() {
+        return this.ignoreSymbols;
     }
 
     public Integer getMaxMissed() {
         return this.maxMissed;
     }
 
+    @Override
     public String toString() {
-        return "DesensitizedField(name=" + this.getName() + ", content=" + this.getContent() + ", skipHead=" + this.getSkipHead() + ", skipTail=" + this.getSkipTail() + ", c=" + this.getC() + ", skipSymbols=" + this.getSkipSymbols() + ", maxMissed=" + this.getMaxMissed() + ")";
+        return "DesensitizedField(name=" + this.getName() + ", content=" + this.getContent() + ", skipHead=" + this.getSkipHead() + ", skipTail=" + this.getSkipTail() + ", c=" + this.getC() + ", ignoreSymbols=" + this.getIgnoreSymbols() + ", maxMissed=" + this.getMaxMissed() + ")";
     }
 
+    @Override
     public boolean equals(final Object o) {
         if (o == this) {
             return true;
@@ -197,13 +199,13 @@ public final class DesensitizedField {
                 return false;
             }
 
-            Object this$skipSymbols = this.getSkipSymbols();
-            Object other$skipSymbols = other.getSkipSymbols();
-            if (this$skipSymbols == null) {
-                if (other$skipSymbols != null) {
+            Object this$ignoreSymbols = this.getIgnoreSymbols();
+            Object other$ignoreSymbols = other.getIgnoreSymbols();
+            if (this$ignoreSymbols == null) {
+                if (other$ignoreSymbols != null) {
                     return false;
                 }
-            } else if (!this$skipSymbols.equals(other$skipSymbols)) {
+            } else if (!this$ignoreSymbols.equals(other$ignoreSymbols)) {
                 return false;
             }
 
@@ -221,6 +223,7 @@ public final class DesensitizedField {
         }
     }
 
+    @Override
     public int hashCode() {
         int result = 1;
         Object $name = this.getName();
@@ -233,8 +236,8 @@ public final class DesensitizedField {
         result = result * 59 + ($skipTail == null ? 43 : $skipTail.hashCode());
         Object $c = this.getC();
         result = result * 59 + ($c == null ? 43 : $c.hashCode());
-        Object $skipSymbols = this.getSkipSymbols();
-        result = result * 59 + ($skipSymbols == null ? 43 : $skipSymbols.hashCode());
+        Object $ignoreSymbols = this.getIgnoreSymbols();
+        result = result * 59 + ($ignoreSymbols == null ? 43 : $ignoreSymbols.hashCode());
         Object $maxMissed = this.getMaxMissed();
         result = result * 59 + ($maxMissed == null ? 43 : $maxMissed.hashCode());
         return result;

@@ -11,9 +11,11 @@
             <MyPatternLayout pattern="${pattern}">
                 <Desensitized>
                     <enable>true</enable>
-                    <DesensitizedField name="__default__" content="en|num" c="*" skipSymbols=" " skipHead="6"
+                    <DesensitizedField name="__default__" content="en|num" c="*" ignoreSymbols=" " skipHead="6"
                                        skipTail="4"/>
                     <DesensitizedField name="phone" content="num" skipHead="6" skipTail="4"/>
+                    <DesensitizedField name="name" content="en| |lang" skipHead="1" skipTail="1"
+                                       ignoreSymbols=",&quot;，' "/>
                 </Desensitized>
             </MyPatternLayout>
         </Console>

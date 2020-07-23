@@ -29,10 +29,10 @@ log4j2脱敏插件。 增加Layout，增加一个类似RegexReplacement的插件
                     <!-- name是关键字，为__default__代表默认配置 -->
                     <!-- content为匹配的内容，如身份证号是数字，不匹配非数字(除了x)，配置为num|x -->
                     <!-- c为 脱敏后的替代字符-->
-                    <!-- skipSymbols为 跳过的字符，如空格。匹配content时遇到skipSybomls中的字符则匹配中断-->
-                    <!-- skipHead，skipTail  不脱敏的前后字符长度 -->
+                    <!-- ignoreSymbols为 忽视字符，如空格。匹配content时遇到ignoreSymbols中的字符则匹配中断-->
+                    <!-- skipHead，skipTail  数据的前后不脱敏字符长度 -->
                     <!-- maxMissed为最大未匹配数 -->
-                    <DesensitizedField name="__default__" content="en|num" c="*" skipSymbols=" " skipHead="6"
+                    <DesensitizedField name="__default__" content="en|num" c="*" ignoreSymbols=" " skipHead="6"
                                        skipTail="4" maxMissed="5"/>
                     <DesensitizedField name="phone" content="num" skipHead="6" skipTail="4"/>
                 </Desensitized>
@@ -75,7 +75,7 @@ log4j2脱敏插件。 增加Layout，增加一个类似RegexReplacement的插件
 
   - `<DesensitizedField></DesensitizedField>`脱敏具体字段
 
-      - name：脱敏关键字，字符串中如果有该关键字，则之后其n个字符将被脱敏。`name=__default__`为默认配置
+      - name：脱敏关键字，字符串中如果有该关键字，则之后其n个字符将被脱敏。`name=__default__`为默认配置，详细配置覆盖默认配置
       - content为匹配的内容，如身份证号是数字，不匹配非数字(除了x)，配置为num|x。通过|分隔
           - en(大小写字母)
           - num(数字)
@@ -85,7 +85,7 @@ log4j2脱敏插件。 增加Layout，增加一个类似RegexReplacement的插件
           - 1个字符，代表指定字符。
           - 其他则忽略
     - c为 脱敏后的替代字符
-    - skipSymbols为 跳过的字符，如空格。可以有多个。匹配content时遇到skipSybomls中的字符则匹配中断(相当于include content exclude skipSybomls)
+    - ignoreSymbols为 忽视字符，如当空格。可以有多个。匹配content时遇到ignoreSymbols(优先级更高)中的字符则匹配中断(相当于include content exclude ignoreSymbols)。主要是用来应对，关键字和匹配内容间隔很多非相关字符(如空格)的场景，不使用时设为空
     - skipHead，skipTail  不脱敏的字符串前后字符长度
     - maxMissed为最大未匹配数。
 

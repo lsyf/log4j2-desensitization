@@ -33,7 +33,7 @@ public final class DesensitizedReplacement {
                     f.getSkipHead(),
                     f.getSkipTail(),
                     f.getC(),
-                    f.getSkipSymbols(),
+                    f.getIgnoreSymbols(),
                     f.getMaxMissed()
             ));
         }
