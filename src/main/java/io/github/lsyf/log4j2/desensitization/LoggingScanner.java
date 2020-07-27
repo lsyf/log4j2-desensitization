@@ -80,8 +80,10 @@ public class LoggingScanner {
                 for (index = curTail + 1; missNum <= maxMissed && index < nextHead; index++) {
                     char c = chars[index];
                     boolean hitIgnoreSymbol = config.hitIgnoreSymbol(c);
-                    //命中脱敏内容
-                    if (!hitIgnoreSymbol && config.hitContent(c)) {
+                    boolean hitContent = config.hitContent(c);
+
+                    //非首次命中，或，首次命中且非忽略字符
+                    if ((isHit || !hitIgnoreSymbol) && hitContent) {
                         isHit = true;
                         if (start == -1) {
                             start = index;

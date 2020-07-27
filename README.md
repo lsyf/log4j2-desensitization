@@ -3,6 +3,7 @@ log4j2脱敏插件。 增加Layout，增加一个类似RegexReplacement的插件
 
 # 用法
 #### 1. 引入依赖
+**该依赖公共仓库中不存在，请自己在私服中更新install**
 ```xml
     <groupId>io.github.lsyf.log4j2</groupId>
     <artifactId>plugin-desensitization</artifactId>
@@ -85,7 +86,7 @@ log4j2脱敏插件。 增加Layout，增加一个类似RegexReplacement的插件
           - 1个字符，代表指定字符。
           - 其他则忽略
     - c为 脱敏后的替代字符
-    - ignoreSymbols为 忽视字符，如当空格。可以有多个。匹配content时遇到ignoreSymbols(优先级更高)中的字符则匹配中断(相当于include content exclude ignoreSymbols)。主要是用来应对，关键字和匹配内容间隔很多非相关字符(如空格)的场景，不使用时设为空
+    - ignoreSymbols为 忽视字符，如当空格。可以有多个。匹配content时遇到ignoreSymbols中的字符则匹配中断(相当于include content exclude ignoreSymbols,重复时content优先级更高)。主要是用来应对，关键字和匹配内容间隔很多非相关字符(如空格)的场景，不使用时设为空
     - skipHead，skipTail  不脱敏的字符串前后字符长度
     - maxMissed为最大未匹配数。
 
