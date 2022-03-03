@@ -1,6 +1,30 @@
 # log4j2-desensitization
 log4j2脱敏插件。 增加Layout，增加一个类似RegexReplacement的插件，通过ahocorasick匹配敏感字段
 
+
+示例
+```java
+    @Test
+    public void testName() {
+        log.info("name=ass dfw");
+        log.info("name = ass dfw");
+        log.info("\"name\":\"ass dfw\"");
+        log.info("\"name\"=\"ass dfw\"");
+        log.info("\"name\" : \"ass dfw\"");
+        log.info("\"name\" = \"ass dfw\"");
+        log.info("phone=123412341234123412341234");
+    }
+```
+```xml
+[2022-03-03 14:11:16.291][INFO ][main] io.github.lsyf.log4j2.desensitization.LogTest - name=a*****w
+[2022-03-03 14:11:16.334][INFO ][main] io.github.lsyf.log4j2.desensitization.LogTest - name = a*****w
+[2022-03-03 14:11:16.334][INFO ][main] io.github.lsyf.log4j2.desensitization.LogTest - "name":"a*****w"
+[2022-03-03 14:11:16.334][INFO ][main] io.github.lsyf.log4j2.desensitization.LogTest - "name"="a*****w"
+[2022-03-03 14:11:16.334][INFO ][main] io.github.lsyf.log4j2.desensitization.LogTest - "name" : "a*****w"
+[2022-03-03 14:11:16.335][INFO ][main] io.github.lsyf.log4j2.desensitization.LogTest - "name" = "a*****w"
+[2022-03-03 14:11:16.335][INFO ][main] io.github.lsyf.log4j2.desensitization.LogTest - phone=123412**************1234
+```
+
 # 用法
 #### 1. 引入依赖
 **该依赖公共仓库中不存在，请自己在私服中更新install**
