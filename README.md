@@ -91,7 +91,7 @@ log4j2脱敏插件。 增加Layout，增加一个类似RegexReplacement的插件
 <DesensitizedField name="idNo" content="num|x" skipHead="6" skipTail="4" c="*" maxMissed="5"/>
 ```
 
-意味着： 日志中匹配到idNo时，则
+意味着： 日志中匹配到idNo关键字时，则对之后的内容（数字和x），保留前6位和后四位，中间替换成*。 如果在idNo之后5个字符内没有发现到数字和x，会认为匹配内容失败不再处理。
 
 #### 4. 配置明细
   - `<Desensitized> </Desensitized>` ：插件配置，不脱敏可以删除
